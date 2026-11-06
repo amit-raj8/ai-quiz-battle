@@ -20,7 +20,7 @@ import { useQuiz } from '../context/QuizContext';
 import { useAuth } from '../context/AuthContext';
 import { leaderboardService } from '../services/leaderboardService';
 import { BADGE_TIERS, getBadge } from '../utils/badgeSystem';
-import { generatePilotId } from '../services/userService';
+import { generatePilotId, cleanNumericPilotId } from '../services/userService';
 
 // Helper to ensure current authenticated user is synchronized with the live Firestore list
 function syncRealtimeUsers(firestoreUsers = [], user = null, profile = null) {
@@ -36,7 +36,7 @@ function syncRealtimeUsers(firestoreUsers = [], user = null, profile = null) {
     const currentUserPayload = {
       id: user.uid,
       uid: user.uid,
-      pilotId: (profile?.pilotId && /^PLT-\d{8}$/.test(profile.pilotId)) ? profile.pilotId : generatePilotId(user.uid),
+      pilotId: cleanNumericPilotId(profile?.pilotId, user.uid),
       name: profile?.displayName || user.displayName || user.email?.split('@')[0] || 'PILOT',
       displayName: profile?.displayName || user.displayName || user.email?.split('@')[0] || 'PILOT',
       email: user.email || '',
@@ -286,7 +286,7 @@ export default function Leaderboard() {
                     <span className="text-[8px] px-1 py-0.2 bg-[#FFC000] text-black font-black uppercase">YOU</span>
                   </div>
                   <div className="text-[10px] font-mono text-[#777777]">
-                    {myEntry?.pilotId || userProfile?.pilotId || 'PLT-CURRENT'}
+                    {cleanNumericPilotId(myEntry?.pilotId || userProfile?.pilotId, user?.uid)}
                   </div>
                 </div>
               </div>

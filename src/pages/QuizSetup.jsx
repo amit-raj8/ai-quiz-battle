@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import { friendService, TRAINING_BOT_FRIEND } from '../services/friendService';
 import { duelService } from '../services/duelService';
 import { questionService } from '../services/questionService';
-import { generatePilotId } from '../services/userService';
+import { generatePilotId, cleanNumericPilotId } from '../services/userService';
 import { randomizeQuestionsList } from '../utils/questionRandomizer';
 import { 
   Play, 
@@ -48,7 +48,7 @@ export default function QuizSetup() {
   const [battleMode, setBattleMode] = useState('solo');
 
   // Unique Pilot ID & Copy state
-  const myPilotId = userProfile?.pilotId || (currentUser ? generatePilotId(currentUser.uid) : 'PLT-GUEST');
+  const myPilotId = cleanNumericPilotId(userProfile?.pilotId, currentUser?.uid);
   const [copiedId, setCopiedId] = useState(false);
 
   // Friend System states
@@ -511,7 +511,7 @@ export default function QuizSetup() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter 8-digit Pilot ID (e.g. 23454376 or PLT-23454376) or name..."
+                    placeholder="Enter 8-digit Unique ID (e.g. 23454376) or name..."
                     className="flex-1 bg-[#181818] border border-[#333333] focus:border-[#FFC000] px-4 py-2.5 text-xs text-white placeholder-[#666666] font-mono outline-none"
                   />
                   <button
@@ -537,7 +537,7 @@ export default function QuizSetup() {
                         <div key={p.uid} className="p-3 bg-[#181818] border border-[#2A2A2A] flex items-center justify-between">
                           <div>
                             <h4 className="text-xs font-bold text-white uppercase">{p.displayName}</h4>
-                            <p className="text-[10px] font-mono text-[#FFC000]">{p.pilotId} • Level {p.currentLevel}</p>
+                            <p className="text-[10px] font-mono text-[#FFC000]">ID: {cleanNumericPilotId(p.pilotId, p.uid)} • Level {p.currentLevel}</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
@@ -600,7 +600,7 @@ export default function QuizSetup() {
                               </h4>
                             </div>
                             <p className="text-[11px] font-mono text-[#FFC000]">
-                              {friend.pilotId || 'PLT-PILOT'}
+                              ID: {cleanNumericPilotId(friend.pilotId, friend.uid)}
                             </p>
                           </div>
                           <span className="px-2 py-0.5 bg-[#1F1F1F] border border-[#2E2E2E] text-[9px] font-mono text-[#888888] uppercase">

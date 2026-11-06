@@ -43,7 +43,7 @@ export default function DuelInviteModal({ invite, onAccept, onDecline }) {
                 {invite.host?.name || 'PILOT CHALLENGER'}
               </h3>
               <p className="text-xs font-mono text-[#FFC000]">
-                {invite.host?.pilotId || 'PLT-WARRIOR'}
+                ID: {invite.host?.pilotId ? String(invite.host.pilotId).replace(/^PLT-/i, '') : '84615116'}
               </p>
             </div>
             <span className="px-2.5 py-1 bg-[#222222] border border-[#333333] text-[10px] font-mono text-white uppercase">

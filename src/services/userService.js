@@ -9,16 +9,16 @@ import {
 import { db } from '../firebase';
 
 /**
- * Deterministically generates an 8-digit unique numerical Pilot ID (e.g. PLT-84615116).
+ * Deterministically generates an 8-digit unique numerical Pilot ID (e.g. 84615116).
  * Uses a multi-pass cryptographic & polynomial hash over the user's permanent Firebase Auth UID
  * to guarantee uniform distribution across 90,000,000 values (range: 10000000 to 99999999)
  * with zero alphanumeric clutter and no collisions.
  *
  * @param {string} uid - Firebase Auth UID
- * @returns {string} Unique 8-digit Pilot ID formatted as "PLT-XXXXXXXX"
+ * @returns {string} Pure 8-digit numeric string (e.g. "84615116")
  */
 export function generatePilotId(uid) {
-  if (!uid) return 'PLT-10000000';
+  if (!uid) return '10000000';
 
   let h1 = 0x811c9dc5; // 32-bit FNV offset basis
   let h2 = 5381;       // 32-bit DJB2 seed
@@ -37,7 +37,21 @@ export function generatePilotId(uid) {
   const rawNum = Math.abs((h1 ^ (h2 * 31) ^ (h3 * 101))) % 90000000;
   const num8 = 10000000 + rawNum;
 
-  return `PLT-${num8}`;
+  return String(num8);
+}
+
+/**
+ * Normalizes any pilot ID into a pure 8-digit numeric string, stripping legacy "PLT-" prefixes.
+ *
+ * @param {string} rawId - Stored pilot ID or string
+ * @param {string} [fallbackUid=''] - Optional UID to deterministically compute 8-digit ID if missing
+ * @returns {string} Pure 8-digit numeric ID
+ */
+export function cleanNumericPilotId(rawId, fallbackUid = '') {
+  if (!rawId) return fallbackUid ? generatePilotId(fallbackUid) : '10000000';
+  const stripped = String(rawId).replace(/^PLT-?/i, '').trim();
+  if (/^\d{8}$/.test(stripped)) return stripped;
+  return fallbackUid ? generatePilotId(fallbackUid) : '10000000';
 }
 
 /**
@@ -96,9 +110,9 @@ export const userService = {
           lastLogin: serverTimestamp()
         };
 
-        const isNumeric8 = existingData.pilotId && /^PLT-\d{8}$/.test(existingData.pilotId);
-        if (!isNumeric8) {
-          updatePayload.pilotId = pilotId;
+        const cleanId = cleanNumericPilotId(existingData.pilotId, user.uid);
+        if (existingData.pilotId !== cleanId) {
+          updatePayload.pilotId = cleanId;
         }
 
         if (additionalData.displayName?.trim() && additionalData.displayName.trim() !== existingData.displayName) {

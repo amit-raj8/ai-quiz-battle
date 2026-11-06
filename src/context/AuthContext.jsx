@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, getFriendlyAuthErrorMessage } from '../services/authService';
-import { userService, generatePilotId } from '../services/userService';
+import { userService, generatePilotId, cleanNumericPilotId } from '../services/userService';
 
 const AuthContext = createContext(null);
 
@@ -28,10 +28,10 @@ export const AuthProvider = ({ children }) => {
         unsubscribeFirestore = userService.subscribeToUserProfile(
           user.uid,
           (profileData) => {
-            const isNumeric8 = profileData?.pilotId && /^PLT-\d{8}$/.test(profileData.pilotId);
+            const cleanId = cleanNumericPilotId(profileData?.pilotId, user.uid);
             const enriched = profileData ? {
               ...profileData,
-              pilotId: isNumeric8 ? profileData.pilotId : generatePilotId(user.uid)
+              pilotId: cleanId
             } : null;
             setUserProfile(enriched);
             setLoading(false);

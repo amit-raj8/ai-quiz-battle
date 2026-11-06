@@ -4,7 +4,7 @@ import {
   onSnapshot 
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { generatePilotId } from './userService';
+import { generatePilotId, cleanNumericPilotId } from './userService';
 
 /**
  * Service managing real dynamic leaderboard standings from the Firestore "users" collection.
@@ -35,7 +35,7 @@ export const leaderboardService = {
         return {
           id: doc.id,
           uid: doc.id,
-          pilotId: (data.pilotId && /^PLT-\d{8}$/.test(data.pilotId)) ? data.pilotId : generatePilotId(doc.id),
+          pilotId: cleanNumericPilotId(data.pilotId, doc.id),
           name: data.displayName || data.email?.split('@')[0] || 'PILOT',
           displayName: data.displayName || data.email?.split('@')[0] || 'PILOT',
           email: data.email || '',
@@ -112,7 +112,7 @@ export const leaderboardService = {
           return {
             id: doc.id,
             uid: doc.id,
-            pilotId: (data.pilotId && /^PLT-\d{8}$/.test(data.pilotId)) ? data.pilotId : generatePilotId(doc.id),
+            pilotId: cleanNumericPilotId(data.pilotId, doc.id),
             name: data.displayName || data.email?.split('@')[0] || 'PILOT',
             displayName: data.displayName || data.email?.split('@')[0] || 'PILOT',
             email: data.email || '',

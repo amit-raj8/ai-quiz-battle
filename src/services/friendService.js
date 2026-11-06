@@ -11,12 +11,12 @@ import {
   onSnapshot 
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { generatePilotId } from './userService';
+import { generatePilotId, cleanNumericPilotId } from './userService';
 
 // Built-in training rival so solo users can test 1v1 Duels instantly
 export const TRAINING_BOT_FRIEND = {
   uid: 'bot_cyber_rival_01',
-  pilotId: 'PLT-99990001',
+  pilotId: '99990001',
   displayName: 'CYBER-NEXUS [AI RIVAL]',
   photoURL: null,
   currentLevel: 5,
@@ -27,7 +27,7 @@ export const TRAINING_BOT_FRIEND = {
 
 export const friendService = {
   /**
-   * Search registered pilots by their Unique 8-digit Pilot ID (e.g. 23454376 or PLT-23454376) or display name.
+   * Search registered pilots by their Unique 8-digit numerical ID (e.g. 23454376) or display name.
    *
    * @param {string} queryText - Search term
    * @param {string} currentUserId - The searcher's UID (excluded from results)
@@ -37,7 +37,7 @@ export const friendService = {
     if (!queryText || !queryText.trim()) return [];
 
     const cleanedQuery = queryText.trim().toLowerCase();
-    const digitsOnlyQuery = cleanedQuery.replace(/^plt-?/i, '').trim();
+    const digitsOnlyQuery = cleanedQuery.replace(/\D/g, '');
 
     try {
       const usersRef = collection(db, 'users');
@@ -51,20 +51,19 @@ export const friendService = {
         if (docSnap.id === currentUserId) return; // Exclude self
 
         const data = docSnap.data();
-        const pilotId = (data.pilotId || generatePilotId(docSnap.id)).toLowerCase();
-        const numericPart = pilotId.replace(/^plt-/i, '');
+        const pilotId = cleanNumericPilotId(data.pilotId, docSnap.id);
         const displayName = (data.displayName || '').toLowerCase();
         const email = (data.email || '').toLowerCase();
 
         if (
           pilotId.includes(cleanedQuery) ||
-          (digitsOnlyQuery && numericPart.includes(digitsOnlyQuery)) ||
+          (digitsOnlyQuery && pilotId.includes(digitsOnlyQuery)) ||
           displayName.includes(cleanedQuery) ||
           email.includes(cleanedQuery)
         ) {
           results.push({
             uid: docSnap.id,
-            pilotId: data.pilotId || generatePilotId(docSnap.id),
+            pilotId,
             displayName: data.displayName || data.email?.split('@')[0] || 'PILOT',
             photoURL: data.photoURL || null,
             currentLevel: data.currentLevel || 1,
@@ -118,11 +117,11 @@ export const friendService = {
         requestId,
         fromUid: currentUser.uid,
         fromName: currentUser.displayName || 'PILOT',
-        fromPilotId: currentUser.pilotId || generatePilotId(currentUser.uid),
+        fromPilotId: cleanNumericPilotId(currentUser.pilotId, currentUser.uid),
         fromPhotoURL: currentUser.photoURL || null,
         toUid: targetPilot.uid,
         toName: targetPilot.displayName || 'PILOT',
-        toPilotId: targetPilot.pilotId || generatePilotId(targetPilot.uid),
+        toPilotId: cleanNumericPilotId(targetPilot.pilotId, targetPilot.uid),
         toPhotoURL: targetPilot.photoURL || null,
         status: 'pending',
         createdAt: serverTimestamp()

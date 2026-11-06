@@ -117,7 +117,7 @@ export default function Navbar() {
                       {displayName}
                     </div>
                     <div className="text-[9px] text-[#FFC000] font-mono uppercase">
-                      {userProfile?.pilotId ? `${userProfile.pilotId} • ` : ''}LVL {userProfile?.currentLevel || 1}
+                      {userProfile?.pilotId ? `${String(userProfile.pilotId).replace(/^PLT-/i, '')} • ` : ''}LVL {userProfile?.currentLevel || 1}
                     </div>
                   </div>
                 </button>

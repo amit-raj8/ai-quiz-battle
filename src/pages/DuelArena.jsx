@@ -286,7 +286,7 @@ export default function DuelArena() {
                   <span className="text-[10px] font-mono text-[#888888] uppercase block">PILOT 1 (YOU)</span>
                   <h3 className="text-lg font-bold text-white uppercase font-display">{myState?.name}</h3>
                 </div>
-                <span className="text-xs font-mono text-[#FFC000]">{myState?.pilotId}</span>
+                <span className="text-xs font-mono text-[#FFC000]">ID: {myState?.pilotId ? String(myState.pilotId).replace(/^PLT-/i, '') : ''}</span>
               </div>
               <div className="space-y-3 pt-4 font-mono text-sm">
                 <div className="flex justify-between">
@@ -311,7 +311,7 @@ export default function DuelArena() {
                   <span className="text-[10px] font-mono text-[#888888] uppercase block">PILOT 2 (OPPONENT)</span>
                   <h3 className="text-lg font-bold text-white uppercase font-display">{opponentState?.name}</h3>
                 </div>
-                <span className="text-xs font-mono text-[#FFC000]">{opponentState?.pilotId}</span>
+                <span className="text-xs font-mono text-[#FFC000]">ID: {opponentState?.pilotId ? String(opponentState.pilotId).replace(/^PLT-/i, '') : ''}</span>
               </div>
               <div className="space-y-3 pt-4 font-mono text-sm">
                 <div className="flex justify-between">
@@ -378,7 +378,7 @@ export default function DuelArena() {
             <h4 className="text-sm font-bold text-white uppercase font-display truncate max-w-[130px]">
               {myState?.name}
             </h4>
-            <span className="text-[10px] font-mono text-[#FFC000]">{myState?.pilotId}</span>
+            <span className="text-[10px] font-mono text-[#FFC000]">ID: {myState?.pilotId ? String(myState.pilotId).replace(/^PLT-/i, '') : ''}</span>
           </div>
           <div className="text-right">
             <span className="text-xl font-black font-mono text-[#FFC000] block">
@@ -421,7 +421,7 @@ export default function DuelArena() {
             <h4 className="text-sm font-bold text-white uppercase font-display truncate max-w-[130px]">
               {opponentState?.name}
             </h4>
-            <span className="text-[10px] font-mono text-[#FFC000]">{opponentState?.pilotId}</span>
+            <span className="text-[10px] font-mono text-[#FFC000]">ID: {opponentState?.pilotId ? String(opponentState.pilotId).replace(/^PLT-/i, '') : ''}</span>
           </div>
         </div>
 

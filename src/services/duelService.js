@@ -10,7 +10,7 @@ import {
   onSnapshot 
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { generatePilotId } from './userService';
+import { generatePilotId, cleanNumericPilotId } from './userService';
 
 export const duelService = {
   /**
@@ -49,7 +49,7 @@ export const duelService = {
       host: {
         uid: hostUser.uid,
         name: hostUser.displayName || 'PILOT HOST',
-        pilotId: hostUser.pilotId || generatePilotId(hostUser.uid),
+        pilotId: cleanNumericPilotId(hostUser.pilotId, hostUser.uid),
         photoURL: hostUser.photoURL || null,
         score: 0,
         streak: 0,
@@ -61,7 +61,7 @@ export const duelService = {
       guest: {
         uid: guestUser.uid,
         name: guestUser.displayName || 'PILOT GUEST',
-        pilotId: guestUser.pilotId || generatePilotId(guestUser.uid),
+        pilotId: cleanNumericPilotId(guestUser.pilotId, guestUser.uid),
         photoURL: guestUser.photoURL || null,
         score: 0,
         streak: 0,
