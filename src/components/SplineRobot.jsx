@@ -69,8 +69,6 @@ export default function SplineRobot({
   const eyeRightRef = useRef(null);
   const gleamRef = useRef(null);
   const ambientGlowRef = useRef(null);
-  const haloGoldRef = useRef(null);
-  const haloAmberRef = useRef(null);
 
   // Queue click/tap blink interaction on the robot
   const handleRobotPointerDown = (e) => {
@@ -189,10 +187,6 @@ export default function SplineRobot({
       // Ambient pulse multiplier
       const pulseMultiplier = 0.92 + Math.sin(elapsed * 2.5) * 0.08;
 
-      // 7. Quantum Halo rotations
-      const haloGoldDeg = (elapsed * 14) % 360;
-      const haloAmberDeg = -(elapsed * 20) % 360;
-
       // Direct DOM transforms
       if (floatingRef.current) {
         floatingRef.current.style.transform = `translate3d(0, ${floatY.toFixed(2)}px, 0)`;
@@ -228,14 +222,6 @@ export default function SplineRobot({
 
       if (ambientGlowRef.current) {
         ambientGlowRef.current.style.transform = `translate3d(${(curX * 28).toFixed(2)}px, ${(curY * 28).toFixed(2)}px, 0)`;
-      }
-
-      if (haloGoldRef.current) {
-        haloGoldRef.current.style.transform = `rotateX(72deg) rotateZ(${haloGoldDeg.toFixed(2)}deg)`;
-      }
-
-      if (haloAmberRef.current) {
-        haloAmberRef.current.style.transform = `rotateX(72deg) rotateZ(${haloAmberDeg.toFixed(2)}deg)`;
       }
 
       // Update Spline 3D scene objects if runtime instance is active
@@ -741,6 +727,7 @@ export default function SplineRobot({
         {/* ========================================================================= */}
         {/* 4. CONCENTRIC QUANTUM HALO RINGS (Recessed Floor Plane: Z: -35px)         */}
         {/* ========================================================================= */}
+        {/* Deep Ambient Occlusion Ground Shadow under Torso */}
         <div 
           className="relative mt-3 flex items-center justify-center pointer-events-none" 
           style={{ 
@@ -749,42 +736,12 @@ export default function SplineRobot({
             transformStyle: 'preserve-3d'
           }}
         >
-          {/* Deep Ambient Occlusion Ground Shadow under Torso */}
           <div 
-            className="absolute w-60 sm:w-76 h-12 rounded-[100%] blur-lg pointer-events-none"
+            className="w-60 sm:w-76 h-12 rounded-[100%] blur-lg pointer-events-none"
             style={{
               background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.98) 0%, transparent 75%)'
             }}
           />
-
-          {/* Outer Gold Quantum Halo Ring (72° Perspective Angle) */}
-          <div 
-            ref={haloGoldRef}
-            className="w-64 sm:w-80 h-16 border-2 border-[#f5c558]/70 rounded-[100%] will-change-transform"
-            style={{ 
-              transform: 'rotateX(72deg)',
-              boxShadow: '0 0 24px rgba(245,197,88,0.40), inset 0 0 12px rgba(245,197,88,0.25)'
-            }}
-          />
-          {/* Inner Amber Quantum Halo Ring */}
-          <div 
-            ref={haloAmberRef}
-            className="absolute w-48 sm:w-60 h-12 border border-[#ffaa00]/80 rounded-[100%] will-change-transform"
-            style={{ 
-              transform: 'rotateX(72deg)',
-              boxShadow: '0 0 18px rgba(255,170,0,0.50), inset 0 0 10px rgba(255,170,0,0.30)'
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Sentinel Status Telemetry */}
-      <div className="mt-6 space-y-1 select-none">
-        <div className="text-xs font-mono font-bold tracking-[0.25em] text-[#FFC000] uppercase">
-          AI SENTINEL ONLINE
-        </div>
-        <div className="text-[10px] font-mono text-[#7D7D7D] uppercase tracking-wider">
-          COGNITIVE ARENA ASSISTANT • ACTIVE 3D TELEMETRY
         </div>
       </div>
     </div>
@@ -853,12 +810,6 @@ export default function SplineRobot({
         ) : (
           renderRobotStage()
         )}
-
-        {/* Minimal Bottom Telemetry Pill */}
-        <div className="absolute bottom-1 sm:bottom-2 px-3.5 py-1 bg-[#0a0d14]/90 backdrop-blur-md border border-[#222222] text-[10px] font-mono text-[#969696] flex items-center gap-2 tracking-widest uppercase rounded-full pointer-events-none z-20">
-          <span className="w-1.5 h-1.5 bg-[#FFC000] rounded-full animate-ping" />
-          <span>ARENA NEURAL COGNITION SYSTEM</span>
-        </div>
       </div>
     </div>
   );
