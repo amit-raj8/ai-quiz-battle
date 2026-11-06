@@ -129,7 +129,13 @@ export const friendService = {
       return { success: true, message: `Friend request dispatched to ${targetPilot.displayName} (${payload.toPilotId})!` };
     } catch (error) {
       console.error('[FriendService] Error sending friend request:', error);
-      return { success: false, message: 'Failed to dispatch friend request. Please check connection.' };
+      const isPerm = error?.code === 'permission-denied' || String(error?.message || '').toLowerCase().includes('permission');
+      return { 
+        success: false, 
+        message: isPerm 
+          ? 'Firestore permission denied. Please publish updated firestore.rules to Firebase.' 
+          : (error?.message || 'Failed to dispatch friend request. Please check connection.')
+      };
     }
   },
 

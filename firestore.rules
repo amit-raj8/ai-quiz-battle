@@ -50,10 +50,34 @@ service cloud.firestore {
         // Deletion of battle history from clients is disallowed
         allow delete: if false;
       }
+
+      // =======================================================================
+      // 3. FRIENDS SUBCOLLECTION (users/{userId}/friends/{friendId})
+      // =======================================================================
+      match /friends/{friendId} {
+        // Authenticated pilots can read and write reciprocal friend relations
+        allow read, write: if isAuthenticated();
+      }
     }
 
     // =========================================================================
-    // 3. CATEGORIES COLLECTION (categories/{categoryId})
+    // 4. FRIEND REQUESTS COLLECTION (friendRequests/{requestId})
+    // =========================================================================
+    match /friendRequests/{requestId} {
+      // Authenticated pilots can query, send, accept, and decline friend requests
+      allow read, write: if isAuthenticated();
+    }
+
+    // =========================================================================
+    // 5. BATTLE ROOMS COLLECTION (battleRooms/{roomId})
+    // =========================================================================
+    match /battleRooms/{roomId} {
+      // Synchronized 1v1 battle room state readable and mutable by authenticated pilots
+      allow read, write: if isAuthenticated();
+    }
+
+    // =========================================================================
+    // 6. CATEGORIES COLLECTION (categories/{categoryId})
     // =========================================================================
     match /categories/{categoryId} {
       // Public read access for both authenticated pilots and guest players
@@ -64,7 +88,7 @@ service cloud.firestore {
     }
 
     // =========================================================================
-    // 4. QUESTIONS COLLECTION (questions/{questionId})
+    // 7. QUESTIONS COLLECTION (questions/{questionId})
     // =========================================================================
     match /questions/{questionId} {
       // Public read access for battle gameplay (both authenticated & guests)

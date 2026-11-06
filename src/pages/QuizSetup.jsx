@@ -160,6 +160,20 @@ export default function QuizSetup() {
     setTimeout(() => setFriendActionMsg(null), 4000);
   };
 
+  const handleSelectOpponentDirectly = (pilot) => {
+    if (!pilot) return;
+    setFriendsList(prev => {
+      const exists = prev.some(f => f.uid === pilot.uid);
+      return exists ? prev : [pilot, ...prev];
+    });
+    setSelectedFriend(pilot);
+    setFriendActionMsg({
+      type: 'success',
+      text: `Pilot ${pilot.displayName} (${pilot.pilotId}) selected as opponent! Configure rounds below and dispatch duel.`
+    });
+    setTimeout(() => setFriendActionMsg(null), 4000);
+  };
+
   const handleRespondRequest = async (requestId, decision, reqData) => {
     await friendService.respondToFriendRequest(requestId, decision, reqData);
     setPendingRequests(prev => prev.filter(r => r.id !== requestId));
@@ -528,13 +542,23 @@ export default function QuizSetup() {
                               <h4 className="text-xs font-bold text-white uppercase">{p.displayName}</h4>
                               <p className="text-[10px] font-mono text-[#FFC000]">{p.pilotId} • Level {p.currentLevel}</p>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => handleSendFriendRequest(p)}
-                              className="px-3 py-1.5 bg-[#252525] hover:bg-[#FFC000] hover:text-black border border-[#3D3D3D] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer"
-                            >
-                              + SEND REQUEST
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleSelectOpponentDirectly(p)}
+                                className="px-3 py-1.5 bg-[#FFC000] hover:bg-[#FFD033] text-black border border-[#FFC000] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer flex items-center gap-1"
+                              >
+                                <Swords className="w-3 h-3" />
+                                <span>CHALLENGE</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSendFriendRequest(p)}
+                                className="px-3 py-1.5 bg-[#252525] hover:bg-[#383838] hover:text-white border border-[#3D3D3D] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer"
+                              >
+                                + ADD FRIEND
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
