@@ -20,6 +20,7 @@ import { useQuiz } from '../context/QuizContext';
 import { useAuth } from '../context/AuthContext';
 import { leaderboardService } from '../services/leaderboardService';
 import { BADGE_TIERS, getBadge } from '../utils/badgeSystem';
+import { generatePilotId } from '../services/userService';
 
 // Helper to ensure current authenticated user is synchronized with the live Firestore list
 function syncRealtimeUsers(firestoreUsers = [], user = null, profile = null) {
@@ -35,7 +36,7 @@ function syncRealtimeUsers(firestoreUsers = [], user = null, profile = null) {
     const currentUserPayload = {
       id: user.uid,
       uid: user.uid,
-      pilotId: profile?.pilotId || `PLT-${user.uid.slice(0, 6).toUpperCase()}`,
+      pilotId: (profile?.pilotId && /^PLT-\d{8}$/.test(profile.pilotId)) ? profile.pilotId : generatePilotId(user.uid),
       name: profile?.displayName || user.displayName || user.email?.split('@')[0] || 'PILOT',
       displayName: profile?.displayName || user.displayName || user.email?.split('@')[0] || 'PILOT',
       email: user.email || '',

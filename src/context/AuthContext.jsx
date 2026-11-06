@@ -28,9 +28,10 @@ export const AuthProvider = ({ children }) => {
         unsubscribeFirestore = userService.subscribeToUserProfile(
           user.uid,
           (profileData) => {
+            const isNumeric8 = profileData?.pilotId && /^PLT-\d{8}$/.test(profileData.pilotId);
             const enriched = profileData ? {
               ...profileData,
-              pilotId: profileData.pilotId || generatePilotId(user.uid)
+              pilotId: isNumeric8 ? profileData.pilotId : generatePilotId(user.uid)
             } : null;
             setUserProfile(enriched);
             setLoading(false);

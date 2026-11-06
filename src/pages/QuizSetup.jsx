@@ -511,7 +511,7 @@ export default function QuizSetup() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter Pilot ID (e.g. PLT-...) or pilot name..."
+                    placeholder="Enter 8-digit Pilot ID (e.g. 23454376 or PLT-23454376) or name..."
                     className="flex-1 bg-[#181818] border border-[#333333] focus:border-[#FFC000] px-4 py-2.5 text-xs text-white placeholder-[#666666] font-mono outline-none"
                   />
                   <button

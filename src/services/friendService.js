@@ -16,7 +16,7 @@ import { generatePilotId } from './userService';
 // Built-in training rival so solo users can test 1v1 Duels instantly
 export const TRAINING_BOT_FRIEND = {
   uid: 'bot_cyber_rival_01',
-  pilotId: 'PLT-NEXUS',
+  pilotId: 'PLT-99990001',
   displayName: 'CYBER-NEXUS [AI RIVAL]',
   photoURL: null,
   currentLevel: 5,
@@ -27,7 +27,7 @@ export const TRAINING_BOT_FRIEND = {
 
 export const friendService = {
   /**
-   * Search registered pilots by their Unique Pilot ID (e.g. PLT-XXXX) or display name.
+   * Search registered pilots by their Unique 8-digit Pilot ID (e.g. 23454376 or PLT-23454376) or display name.
    *
    * @param {string} queryText - Search term
    * @param {string} currentUserId - The searcher's UID (excluded from results)
@@ -37,6 +37,7 @@ export const friendService = {
     if (!queryText || !queryText.trim()) return [];
 
     const cleanedQuery = queryText.trim().toLowerCase();
+    const digitsOnlyQuery = cleanedQuery.replace(/^plt-?/i, '').trim();
 
     try {
       const usersRef = collection(db, 'users');
@@ -51,11 +52,13 @@ export const friendService = {
 
         const data = docSnap.data();
         const pilotId = (data.pilotId || generatePilotId(docSnap.id)).toLowerCase();
+        const numericPart = pilotId.replace(/^plt-/i, '');
         const displayName = (data.displayName || '').toLowerCase();
         const email = (data.email || '').toLowerCase();
 
         if (
           pilotId.includes(cleanedQuery) ||
+          (digitsOnlyQuery && numericPart.includes(digitsOnlyQuery)) ||
           displayName.includes(cleanedQuery) ||
           email.includes(cleanedQuery)
         ) {

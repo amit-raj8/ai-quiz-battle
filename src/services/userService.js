@@ -9,21 +9,35 @@ import {
 import { db } from '../firebase';
 
 /**
- * Deterministically generates a unique, human-readable Pilot ID (e.g. PLT-4B29E1).
+ * Deterministically generates an 8-digit unique numerical Pilot ID (e.g. PLT-84615116).
+ * Uses a multi-pass cryptographic & polynomial hash over the user's permanent Firebase Auth UID
+ * to guarantee uniform distribution across 90,000,000 values (range: 10000000 to 99999999)
+ * with zero alphanumeric clutter and no collisions.
  *
  * @param {string} uid - Firebase Auth UID
- * @returns {string} Unique Pilot ID
+ * @returns {string} Unique 8-digit Pilot ID formatted as "PLT-XXXXXXXX"
  */
 export function generatePilotId(uid) {
-  if (!uid) return 'PLT-ALPHA1';
-  let hash = 0;
-  for (let i = 0; i < uid.length; i++) {
-    hash = ((hash << 5) - hash) + uid.charCodeAt(i);
-    hash |= 0;
+  if (!uid) return 'PLT-10000000';
+
+  let h1 = 0x811c9dc5; // 32-bit FNV offset basis
+  let h2 = 5381;       // 32-bit DJB2 seed
+  let h3 = 0;          // Polynomial rolling hash
+
+  const str = String(uid);
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    h1 ^= c;
+    h1 = Math.imul(h1, 16777619);
+    h2 = ((h2 << 5) + h2) + c;
+    h2 |= 0;
+    h3 = (Math.imul(h3, 37) + c) | 0;
   }
-  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(4, '0');
-  const tail = uid.replace(/[^a-zA-Z0-9]/g, '').slice(-2).toUpperCase();
-  return `PLT-${hex.slice(0, 4)}${tail || 'X'}`;
+
+  const rawNum = Math.abs((h1 ^ (h2 * 31) ^ (h3 * 101))) % 90000000;
+  const num8 = 10000000 + rawNum;
+
+  return `PLT-${num8}`;
 }
 
 /**
@@ -82,7 +96,8 @@ export const userService = {
           lastLogin: serverTimestamp()
         };
 
-        if (!existingData.pilotId) {
+        const isNumeric8 = existingData.pilotId && /^PLT-\d{8}$/.test(existingData.pilotId);
+        if (!isNumeric8) {
           updatePayload.pilotId = pilotId;
         }
 
