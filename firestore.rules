@@ -1,0 +1,84 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // HELPER FUNCTIONS
+    // =========================================================================
+
+    // Checks if the request is from an authenticated Firebase user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Checks if the authenticated user matches the specified document owner UID
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // =========================================================================
+    // 1. USERS COLLECTION (users/{userId})
+    // =========================================================================
+    match /users/{userId} {
+      // Public read access so guest visitors can view leaderboard & champions preview
+      allow read: if true;
+
+      // Users can only create their own profile matching their Auth UID
+      allow create: if isOwner(userId);
+
+      // Users can only update their own profile
+      allow update: if isOwner(userId);
+
+      // Deletion of user profile documents from clients is strictly disallowed
+      allow delete: if false;
+
+      // =======================================================================
+      // 2. BATTLE HISTORY SUBCOLLECTION (users/{userId}/battleHistory/{battleId})
+      // =======================================================================
+      match /battleHistory/{battleId} {
+        // Users can only read their own battle history
+        allow read: if isOwner(userId);
+
+        // Users can only append/create battle records under their own subcollection
+        allow create: if isOwner(userId)
+                      && request.resource.data.userId == userId;
+
+        // Battle logs are immutable telemetry records; client modifications disallowed
+        allow update: if false;
+
+        // Deletion of battle history from clients is disallowed
+        allow delete: if false;
+      }
+    }
+
+    // =========================================================================
+    // 3. CATEGORIES COLLECTION (categories/{categoryId})
+    // =========================================================================
+    match /categories/{categoryId} {
+      // Public read access for both authenticated pilots and guest players
+      allow read: if true;
+
+      // Read-only collection for client applications (no client mutations)
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // 4. QUESTIONS COLLECTION (questions/{questionId})
+    // =========================================================================
+    match /questions/{questionId} {
+      // Public read access for battle gameplay (both authenticated & guests)
+      allow read: if true;
+
+      // Read-only collection for client applications (no client mutations)
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // DEFAULT DENY FOR ANY OTHER PATH
+    // =========================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
