@@ -497,122 +497,70 @@ export default function QuizSetup() {
                 </button>
               </div>
 
-              {/* 2. FIND & ADD FRIENDS + PENDING REQUESTS */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                {/* Search Pilot Form (Span 7) */}
-                <div className="lg:col-span-7 p-6 bg-[#121212] border border-[#242424] space-y-4">
-                  <div className="flex items-center justify-between border-b border-[#202020] pb-3">
-                    <div className="flex items-center gap-2 text-white font-bold text-xs tracking-wider uppercase font-display">
-                      <UserPlus className="w-4 h-4 text-[#FFC000]" />
-                      <span>SEARCH PILOT BY ID OR NAME</span>
-                    </div>
+              {/* 2. FIND & CHALLENGE PILOTS */}
+              <div className="w-full p-6 bg-[#121212] border border-[#242424] space-y-4">
+                <div className="flex items-center justify-between border-b border-[#202020] pb-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-xs tracking-wider uppercase font-display">
+                    <UserPlus className="w-4 h-4 text-[#FFC000]" />
+                    <span>SEARCH PILOT BY ID OR NAME</span>
                   </div>
-
-                  <form onSubmit={handleSearchPilots} className="flex gap-2">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Enter Pilot ID (e.g. PLT-...) or pilot name..."
-                      className="flex-1 bg-[#181818] border border-[#333333] focus:border-[#FFC000] px-4 py-2.5 text-xs text-white placeholder-[#666666] font-mono outline-none"
-                    />
-                    <button
-                      type="submit"
-                      disabled={isSearching}
-                      className="px-5 py-2.5 bg-[#FFC000] hover:bg-[#FFD033] text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                    >
-                      <Search className="w-3.5 h-3.5" />
-                      <span>{isSearching ? 'SEARCHING...' : 'FIND'}</span>
-                    </button>
-                  </form>
-
-                  {searchFeedback && (
-                    <p className="text-xs font-mono text-[#888888]">{searchFeedback}</p>
-                  )}
-
-                  {/* Search Results */}
-                  {searchResults.length > 0 && (
-                    <div className="space-y-2 pt-2">
-                      <span className="text-[10px] font-mono text-[#888888] uppercase">MATCHING PILOTS</span>
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {searchResults.map((p) => (
-                          <div key={p.uid} className="p-3 bg-[#181818] border border-[#2A2A2A] flex items-center justify-between">
-                            <div>
-                              <h4 className="text-xs font-bold text-white uppercase">{p.displayName}</h4>
-                              <p className="text-[10px] font-mono text-[#FFC000]">{p.pilotId} • Level {p.currentLevel}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => handleSelectOpponentDirectly(p)}
-                                className="px-3 py-1.5 bg-[#FFC000] hover:bg-[#FFD033] text-black border border-[#FFC000] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer flex items-center gap-1"
-                              >
-                                <Swords className="w-3 h-3" />
-                                <span>CHALLENGE</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleSendFriendRequest(p)}
-                                className="px-3 py-1.5 bg-[#252525] hover:bg-[#383838] hover:text-white border border-[#3D3D3D] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer"
-                              >
-                                + ADD FRIEND
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Incoming Pending Requests (Span 5) */}
-                <div className="lg:col-span-5 p-6 bg-[#121212] border border-[#242424] space-y-4">
-                  <div className="flex items-center justify-between border-b border-[#202020] pb-3">
-                    <div className="flex items-center gap-2 text-white font-bold text-xs tracking-wider uppercase font-display">
-                      <Users className="w-4 h-4 text-[#FFC000]" />
-                      <span>PENDING FRIEND REQUESTS</span>
-                    </div>
-                    <span className="px-2 py-0.5 bg-[#202020] text-[10px] font-mono text-[#FFC000]">
-                      {pendingRequests.length} PENDING
-                    </span>
-                  </div>
+                <form onSubmit={handleSearchPilots} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Enter Pilot ID (e.g. PLT-...) or pilot name..."
+                    className="flex-1 bg-[#181818] border border-[#333333] focus:border-[#FFC000] px-4 py-2.5 text-xs text-white placeholder-[#666666] font-mono outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSearching}
+                    className="px-5 py-2.5 bg-[#FFC000] hover:bg-[#FFD033] text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    <Search className="w-3.5 h-3.5" />
+                    <span>{isSearching ? 'SEARCHING...' : 'FIND'}</span>
+                  </button>
+                </form>
 
-                  {pendingRequests.length === 0 ? (
-                    <p className="text-xs text-[#777777] font-sans py-4 text-center">
-                      No incoming friend requests right now.
-                    </p>
-                  ) : (
-                    <div className="space-y-2.5 max-h-48 overflow-y-auto">
-                      {pendingRequests.map((req) => (
-                        <div key={req.id} className="p-3 bg-[#181818] border border-[#2A2A2A] space-y-2">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h4 className="text-xs font-bold text-white uppercase">{req.fromName}</h4>
-                              <p className="text-[10px] font-mono text-[#FFC000]">{req.fromPilotId}</p>
-                            </div>
-                            <span className="text-[9px] font-mono text-[#888888] uppercase">REQUEST</span>
+                {searchFeedback && (
+                  <p className="text-xs font-mono text-[#888888]">{searchFeedback}</p>
+                )}
+
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                  <div className="space-y-2 pt-2">
+                    <span className="text-[10px] font-mono text-[#888888] uppercase">MATCHING PILOTS</span>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {searchResults.map((p) => (
+                        <div key={p.uid} className="p-3 bg-[#181818] border border-[#2A2A2A] flex items-center justify-between">
+                          <div>
+                            <h4 className="text-xs font-bold text-white uppercase">{p.displayName}</h4>
+                            <p className="text-[10px] font-mono text-[#FFC000]">{p.pilotId} • Level {p.currentLevel}</p>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 pt-1">
+                          <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleRespondRequest(req.id, 'accepted', req)}
-                              className="py-1 bg-[#00D26A] text-black font-mono font-bold text-[10px] uppercase hover:bg-[#00E575] cursor-pointer"
+                              type="button"
+                              onClick={() => handleSelectOpponentDirectly(p)}
+                              className="px-3 py-1.5 bg-[#FFC000] hover:bg-[#FFD033] text-black border border-[#FFC000] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer flex items-center gap-1"
                             >
-                              ACCEPT
+                              <Swords className="w-3 h-3" />
+                              <span>CHALLENGE</span>
                             </button>
                             <button
-                              onClick={() => handleRespondRequest(req.id, 'declined', req)}
-                              className="py-1 bg-[#222222] text-[#888888] font-mono text-[10px] uppercase hover:text-white cursor-pointer"
+                              type="button"
+                              onClick={() => handleSendFriendRequest(p)}
+                              className="px-3 py-1.5 bg-[#252525] hover:bg-[#383838] hover:text-white border border-[#3D3D3D] text-[10px] font-mono uppercase font-bold transition-colors cursor-pointer"
                             >
-                              DECLINE
+                              + ADD FRIEND
                             </button>
                           </div>
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
-
+                  </div>
+                )}
               </div>
 
               {/* 3. SELECT OPPONENT FRIEND */}
